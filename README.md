@@ -46,7 +46,6 @@ DocSync is a collaborative document editing tool designed to enable multiple use
     cd ../client
     npm install
 
-    Configure Environment Variables
 
 3. **Create a .env file in the server directory with the following content:**
 

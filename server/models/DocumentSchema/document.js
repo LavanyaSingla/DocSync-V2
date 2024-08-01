@@ -7,4 +7,4 @@ const Document = mongoose.Schema(
     }
 )
 
-module.exports = mongoose.model("Document",Document) ;
+module.exports = mongoose.model("Document",Document,'docs') ;

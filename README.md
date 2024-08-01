@@ -39,7 +39,8 @@ DocSync is a collaborative document editing tool designed to enable multiple use
     cd server
     npm install
 
-    For the client:
+For the client:
+
     ```sh
     cd ../client
     npm install

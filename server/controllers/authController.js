@@ -26,5 +26,31 @@ exports.signIn = (req,res)=>{
 
         var validatePassword = bcrypt.compareSync(req.body.password,user.password);
         if(!validatePassword) return res.status(401).json({"Messaga":"Invalid Passowrd"});
+
+        const token = jwt.sign({id:user.id},config.secret,
+            {
+                alogorithm: 'HS256',
+                allowInsecureKeySizes:true,
+                expiresIn:8000
+            }
+        );
+
+        req.session.token = token;
+        res.status(200).json({
+            id:user.id,
+            username:user.username,
+            email:user.email,
+            role:user.role
+        });
     })
 };
+
+exports.signOut = (req,res)=>{
+    try{
+        req.session=null;
+        return res.status(200).json({"Message":"You've been signed out successfully!"});
+    }
+    catch(err){
+        this.next(err);
+    }
+}

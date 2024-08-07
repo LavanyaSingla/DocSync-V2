@@ -1,4 +1,11 @@
 const mongoose = require('mongoose');
 
-const Role = new mongoose.Schema({type:String,enum:["editor","viewer","admin"]});
-module.exports= mongoose.model('Role',Role);
+const RoleSchema = new mongoose.Schema({
+    type: {
+        type: String,
+        enum: ["editor", "viewer", "admin"],
+        required: true
+    }
+});
+
+module.exports = mongoose.model('Role', RoleSchema);

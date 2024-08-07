@@ -6,9 +6,9 @@ const cors = require('cors')
 const http = require('http');
 const session = require('express-session');
 const config = require('./config/config.js');
-import { error } from 'console';
-import authController from './controllers/authController.js';
-import authJwt from './middleware/index.js';
+const authController = require('./controllers/authController.js');
+const {authJwt} = require('./middleware/index.js');
+const jwt = require('jsonwebtoken');
 
 
 mongoose.connect("mongodb://localhost:27017/Group-Docs", {
@@ -32,7 +32,7 @@ const defaultValue = "";
 
 
 //Middleware Setup
-app.use(cors);
+app.use(cors());
 app.use(bodyParser.json());
 app.use(session({
     secret: config.secret,
@@ -49,12 +49,12 @@ app.post('/signin', authController.signIn);
 app.post('/signout', authController.signOut);
 
 //Middleware to verify token for socket connections
-io.use((socket,next)=>{
+io.use((socket, next) => {
     let token = socket.handshake.auth.token;
-    if(!token) return next(new Error("Authentication Error"));
+    if (!token) return next(new Error("Authentication Error"));
 
-    jwt.verify(token,config.secret,(err,decoded)=>{
-        if(err) return next(new Error("Authentication Error"));
+    jwt.verify(token, config.secret, (err, decoded) => {
+        if (err) return next(new Error("Authentication Error"));
         socket.userId = decoded.id;
         next();
     });
@@ -69,7 +69,7 @@ io.on("connection", socket => {
         socket.emit('load-document', docData.data);
 
         socket.on('send-changes', delta => {
-            socket.broadcast.emit('receive-changes', delta)
+            socket.broadcast.to(documentId).emit('receive-changes', delta);
         })
 
         socket.on("save-document", async data => {
@@ -87,6 +87,6 @@ async function findOrCreateDocument(id) {
 
 }
 
-server.listen(3001,()=>{
+server.listen(3001, () => {
     console.log(`Server is running on port 3001`);
 })

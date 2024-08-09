@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useAuth } from './authContext';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const Login = () => {
     const [username, setUsername] = useState('');
@@ -29,6 +29,7 @@ const Login = () => {
                 <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
             </label>
             <button type="submit">Login</button>
+            <p>Don't have an account? <Link to="/signup">Sign Up</Link></p>
         </form>
     );
 };

@@ -1,69 +1,95 @@
-const User = require('../models/UserSchema/user.js');
-const Role = require('../models/UserSchema/role.js');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const config = require('../config/config.js');
+import userModel from '../models/UserSchema/user.js';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import config from '../config/config.js';
 
-exports.signUp = async (req, res) => {
-    try {
-        const { username, email, password, role } = req.body;
-        const roleDocument = await Role.findOne({ type: role });
-
-        if (!roleDocument) {
-            return res.status(400).json({ "Message": "Invalid role" });
+class authController {
+    static register = async (req, res) => {
+        try {
+            const { username, email, password } = req.body;
+            if (username && email && password) {
+                const isUser = await userModel.findOne({ email: email });
+                if (isUser) {
+                    return res.status(400).json({ message: "user already exists" });
+                }
+                else {
+                    const gensalt = await bcrypt.genSalt(10);
+                    const hashedPassword = await bcrypt.hash(password, gensalt);
+                    const newUser = userModel({ username, email, password: hashedPassword });
+                    const result = await newUser.save();
+                    if (result) {
+                        return res.status(201).json({ message: "user registered successfully" });
+                    }
+                    else {
+                        return res.status(500).json({ message: "Internal server error" });
+                    }
+                }
+            }
+            else return res.status(400).json({ message: "All fields are required" });
         }
-
-        const user = new User({
-            username,
-            email,
-            role: roleDocument._id,
-            password: bcrypt.hashSync(password, 8)
-        });
-
-        await user.save();
-
-        res.status(200).json({ "Message": "User signup successfully!", "data": user });
-    } catch (err) {
-        res.status(500).json({ "Message": err.message });
-    }
-};
-
-exports.signIn = async (req, res) => {
-    try {
-        const user = await User.findOne({ username: req.body.username }).populate('role');
-
-        if (!user) {
-            return res.status(400).json({ "Message": "User not found." });
+        catch (err) {
+            console.log(req);
+            return res.status(400).json({ message: err.message });
         }
+    };
+    static login = async (req, res) => {
+        try {
+            const { email, password } = req.body;
+            if (email && password) {
+                const isUser = await userModel.findOne({ email: email });
+                if (isUser) {
+                    if (await bcrypt.compare(password, isUser.password)) {
+                        //generate token
+                        const token = jwt.sign(
+                            { userId: isUser._id },
+                            config.SECRET_KEY,
+                            { expiresIn: "2d" }
+                        );
 
-        const validatePassword = bcrypt.compareSync(req.body.password, user.password);
-        if (!validatePassword) {
-            return res.status(401).json({ "Message": "Invalid password" });
+                        return res.status(200).json({ message: "User login successfully", token });
+                    }
+                    else {
+                        return res.status(400).json({ message: "Invalid credentials" });
+                    }
+                }
+                else {
+                    return res.status(400).json({ message: "User not found" });
+                }
+            }
+            else return res.status(400).json({ message: "All fields are required" });
+
         }
-
-        const token = jwt.sign({ id: user.id }, config.secret, {
-            algorithm: 'HS256',
-            allowInsecureKeySizes: true,
-            expiresIn: 8000
-        });
-
-        req.session.token = token;
-        res.status(200).json({
-            id: user.id,
-            username: user.username,
-            email: user.email,
-            role: user.role.type
-        });
-    } catch (err) {
-        res.status(500).json({ "Message": err.message });
+        catch (err) {
+            console.log(err.message);
+            return res.status(400).json({ message: err.message });
+        }
     }
-};
-
-exports.signOut = async (req, res) => {
-    try {
-        req.session = null;
-        res.status(200).json({ "Message": "You've been signed out successfully!" });
-    } catch (err) {
-        res.status(500).json({ "Message": err.message });
+    static changePassword = async (req, res) => {
+        try {
+            const { newPassword, confirmPassword } = req.body;
+            if (newPassword && confirmPassword) {
+                if (newPassword === confirmPassword) {
+                    const gensalt = await bcrypt.genSalt(10);
+                    const hashedPassword = await bcrypt.hash(newPassword, gensalt);
+                    await userModel.findByIdAndUpdate(req.user._id, {
+                        password: hashedPassword
+                    });
+                    return res.status(200).json({ message: "Password changed successfully" })
+                }
+                else {
+                    return res.status(400).json({ message: "Password does not match" })
+                }
+            }
+            else {
+                console.log(req.body);
+                return res.status(400).json({ message: "All fields are required" })
+            }
+        }
+        catch (err) {
+            return res.status(400).json({ message: err.message });
+        }
     }
-};
+}
+
+export default authController;
+

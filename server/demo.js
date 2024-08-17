@@ -1,5 +1,5 @@
-const mongoose = require('mongoose');
-const Role = require('./models/RoleSchema/role'); // Adjust the path as needed
+import mongoose from 'mongoose';
+import Role from './models/UserSchema/role';
 
 mongoose.connect('mongodb://localhost:27017/Group-Docs', {
     useNewUrlParser: true,

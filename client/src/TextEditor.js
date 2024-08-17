@@ -4,7 +4,6 @@ import 'quill/dist/quill.snow.css';
 import './styles.css';
 import { io } from 'socket.io-client';
 import { useParams } from 'react-router-dom';
-import { useAuth } from './authContext';
 
 const SAVE_INTERVAL_MS = 2000;
 const TOOLBAR_OPTIONS = [
@@ -23,21 +22,21 @@ export default function TextEditor() {
   const [socket, setSocket] = useState()
   const [quill, setQuill] = useState();
   const { id: documentId } = useParams();
-  const { user } = useAuth();
 
-  useEffect(() => {
-    if (!user) return;
-    const s = io("http://localhost:3001", {
-      auth: {
-        token: user.token
-      }
-    });
-    setSocket(s);
 
-    return () => {
-      s.disconnect();
-    }
-  }, [user]);
+  // useEffect(() => {
+  //   if (!user) return;
+  //   const s = io("http://localhost:3001", {
+  //     auth: {
+  //       token: user.token
+  //     }
+  //   });
+  //   setSocket(s);
+
+  //   return () => {
+  //     s.disconnect();
+  //   }
+  // }, [user]);
 
   useEffect(() => {
     if (socket == null || quill == null) return;

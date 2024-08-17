@@ -3,7 +3,8 @@ import Quill from 'quill';
 import 'quill/dist/quill.snow.css';
 import './styles.css';
 import { io } from 'socket.io-client';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
+import axios from './Services/axiosInterceptor';
 
 const SAVE_INTERVAL_MS = 2000;
 const TOOLBAR_OPTIONS = [
@@ -17,74 +18,101 @@ const TOOLBAR_OPTIONS = [
   ["iamge", "blockquote", "code-block"],
   ["clean"]
 ]
+
 export default function TextEditor() {
-
-  const [socket, setSocket] = useState()
-  const [quill, setQuill] = useState();
+  const [socket, setSocket] = useState(null);
+  const [quill, setQuill] = useState(null);
   const { id: documentId } = useParams();
+  const token = localStorage.getItem("token");
+  const navigate = useNavigate();
+  const handleSaveDoc = (e) => {
+    navigate("/saveDoc");
+  };
+  const fetchDocument = async () => {
+    try {
+      const response = await axios.post(`api/document/${documentId}`, {}, {
+        headers: {
+          "authorization": `Bearer ${token}`
+        }
+      });
+      if (response.status === 200) {
+        quill.setContents(response.data.content || '');
+        quill.enable();
+      }
+      else {
+        console.log("error in fetching the doc");
+      }
+    }
+    catch (err) {
+      console.log("error in fetching the socket doc", err);
+    }
 
-
-  // useEffect(() => {
-  //   if (!user) return;
-  //   const s = io("http://localhost:3001", {
-  //     auth: {
-  //       token: user.token
-  //     }
-  //   });
-  //   setSocket(s);
-
-  //   return () => {
-  //     s.disconnect();
-  //   }
-  // }, [user]);
+  };
+  useEffect(() => {
+    const s = io("http://localhost:3001");
+    setSocket(s);
+    return () => {
+      s.disconnect();
+    }
+  }, []);
 
   useEffect(() => {
-    if (socket == null || quill == null) return;
-
-    socket.once('load-document', document => {
-      quill.setContents(document)
-      quill.enable()
-    });
+    if (!quill || !socket) return;
+    fetchDocument();
     socket.emit('get-document', documentId);
+    socket.on('error', (message) => {
+      navigate("/404");
+    });
+    socket.once('load-document', (document) => {
+      quill.setContents(document);
+      quill.enable();
+    });
 
+    return () => {
+      socket.off('load-document');
+    }
   }, [socket, quill, documentId]);
 
   useEffect(() => {
-    if (socket == null || quill == null) return;
+    if (!socket || !quill) return;
     const interval = setInterval(() => {
-      socket.emit('save-document', quill.getContents())
-    }, SAVE_INTERVAL_MS)
-
+      socket.emit('save-document', quill.getContents());
+    }, SAVE_INTERVAL_MS);
     return () => {
       clearInterval(interval);
     }
   }, [socket, quill]);
 
+
+  // Handle local text changes and broadcast them->> quill to socket
   useEffect(() => {
     if (socket == null || quill == null) return;
-    const textChangeHandler = (delta, oldDelta, source) => {
+
+    const handleTextChange = (delta, oldDelta, source) => {
       if (source !== 'user') return;
-      socket.emit("send-changes", delta);
+      socket.emit('send-changes', delta);
     };
 
-    quill.on('text-change', textChangeHandler);
+    quill.on('text-change', handleTextChange);
 
     return () => {
-      quill.off('text-change', textChangeHandler);
-    }
+      quill.off('text-change', handleTextChange);
+    };
   }, [socket, quill]);
 
+  // Handle receiving remote text changes ->> socket to quill
   useEffect(() => {
     if (socket == null || quill == null) return;
-    const receiveChangeHandler = (changes) => {
-      quill.updateContents(changes);
-    }
 
-    socket.on('receive-changes', receiveChangeHandler);
+    const handleReceiveChange = (delta) => {
+      quill.updateContents(delta);
+    };
+
+    socket.on('receive-changes', handleReceiveChange);
 
     return () => {
-      socket.off("receive-changes", receiveChangeHandler);
-    }
+      socket.off('receive-changes', handleReceiveChange);
+    };
   }, [socket, quill]);
 
   const wrapperRef = useCallback((wrapper) => {
@@ -92,13 +120,18 @@ export default function TextEditor() {
     wrapper.innerHTML = '';
     const editor = document.createElement('div');
     wrapper.append(editor);
-    const q = new Quill(editor, { theme: "snow", modules: { toolbar: TOOLBAR_OPTIONS } });
-
-    q.disable()
+    const q = new Quill(editor, { theme: 'snow', modules: { toolbar: TOOLBAR_OPTIONS } });
+    q.disable();
     q.setText('Loading...');
     setQuill(q);
   }, []);
+
   return (
-    <div className="container" ref={wrapperRef}></div>
-  )
+    <div>
+      <div className="navbar">
+        <button onClick={handleSaveDoc}>Save</button>
+      </div>
+      <div className="container" ref={wrapperRef}></div>
+    </div>
+  );
 };

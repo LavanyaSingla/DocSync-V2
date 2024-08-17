@@ -1,83 +1,81 @@
-// import mongoose from 'mongoose';
-// import Document from './models/DocumentSchema/document';
 import express from 'express';
-// import bodyParser from 'body-parser';
+import { createServer } from 'http';  // HTTP server for socket.io
+import { Server } from 'socket.io';   // Socket.io server
 import cors from 'cors';
-// import http from 'http';
-// import session from 'express-session';
-// import config from './config/config.js';
-// import { authJwt } from './middleware/index.js';
-// import jwt from 'jsonwebtoken';
-import connectDb from './config/db.js';
-// import { Socket } from 'socket.io';
 import route from './routes/route.js';
+import connectDb from './config/db.js';
+import Document from './models/DocumentSchema/document.js';  // Ensure your Document model is correctly imported
 
 const app = express();
 connectDb();
 
-// // Middleware Setup
+// Middleware
 app.use(cors());
 app.use(express.json());
 
-//Routes
+// HTTP Routes
 app.use("/api", route);
 
-// const server = http.createServer(app);
-// const io = Socket(server, {
-//     cors: {
-//         origin: "http://localhost:3000",
-//         methods: ['GET', 'POST']
-//     },
-// });
+// Create HTTP server instance for Socket.io
+const server = createServer(app);
 
-// const defaultValue = "";
+// Create Socket.io instance and attach it to the server
+const io = new Server(server, {
+    cors: {
+        origin: "http://localhost:3000",  // Allow CORS from the client
+        methods: ["GET", "POST"]
+    }
+});
 
+// Socket.io logic (for real-time communication)
+io.on("connection", (socket) => {
+    console.log("New WebSocket connection");
 
-// app.use(bodyParser.json());
-// app.use(session({
-//     secret: config.secret,
-//     resave: false,
-//     saveUninitialized: true,
-//     cookie: { secure: false }
-// }));
+    // Listen for the 'get-document' event
+    socket.on('get-document', async (documentId) => {
+        // Handle document retrieval or creation
+        const document = await Document.findById(documentId);
+        
+        if (!document) {
+            socket.emit('error', 'Document not found');
+            return;
+        }
+        socket.join(documentId);  // Join a room based on document ID
+        socket.emit('load-document', document.content);
 
+        // Listen for real-time changes from clients and broadcast to other clients
+        socket.on('send-changes', (delta) => {
+            socket.broadcast.to(documentId).emit('receive-changes', delta);
+        });
 
-// // Middleware to verify token for socket connections
-// io.use((socket, next) => {
-//     let token = socket.handshake.auth.token;
-//     if (!token) return next(new Error("Authentication Error"));
+        // Save document data when client triggers save
+        socket.on('save-document', async (data) => {
+            try {
+                await Document.findByIdAndUpdate(documentId, { content: data }, { new: true });
+            } catch (error) {
+                console.error("Error saving document:", error);
+            }
+        });
 
-//     jwt.verify(token, config.secret, (err, decoded) => {
-//         if (err) return next(new Error("Authentication Error"));
-//         socket.userId = decoded.id;
-//         next();
-//     });
-// });
+    });
 
-// io.on("connection", socket => {
-//     socket.on('get-document', async documentId => {
-//         const docData = await findOrCreateDocument(documentId);
-//         socket.join(documentId);
-//         socket.emit('load-document', docData.data);
+    // Clean up on disconnect
+    socket.on('disconnect', () => {
+        console.log("WebSocket disconnected");
+    });
+});
 
-//         socket.on('send-changes', delta => {
-//             socket.broadcast.to(documentId).emit('receive-changes', delta);
-//         });
+// Function to find or create a document
+async function findOrCreateDocument(id) {
+    if (id == null) return;
 
-//         socket.on("save-document", async data => {
-//             await Document.findByIdAndUpdate(documentId, { data });
-//         });
-//     });
-//     console.log("connected to client");
-// });
+    // Try to find the document by its ID
+    let document = await Document.findById(id);
+    return document;
+}
 
-// async function findOrCreateDocument(id) {
-//     if (id == null) return;
-//     const document = await Document.findById(id);
-//     if (document) return document;
-//     return await Document.create({ _id: id, data: defaultValue });
-// }
-
-app.listen(3001, () => {
-    console.log(`Server is running on port 3001`);
+// Start the server on a given port
+const PORT = process.env.PORT || 3001;
+server.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });

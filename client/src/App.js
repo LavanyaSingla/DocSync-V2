@@ -8,6 +8,7 @@ import ChangePassword from './Components/ChangePassword';
 import ProtectedRoutes from './Services/ProtectedRoutes.js';
 import NotFound from './Pages/404.js';
 import AuthRoute from './Services/AuthRoute.js';
+import SaveDocument from './Components/SaveDocument.js';
 
 function PrivateRoute({ children }) {
   return <Navigate to="/login" />;
@@ -19,27 +20,18 @@ function App() {
       <Routes>
         <Route path="/login" element={<AuthRoute> <Login /> </AuthRoute>} />
         <Route path="/signup" element={<AuthRoute> <Signup /></AuthRoute>} />
+
+        {/* Protected routes*/}
         <Route path="/" element={<ProtectedRoutes />}>
           <Route path="/" element={<Home />} />
           <Route path="/changePassword" element={<ChangePassword />} />
+          <Route path="/document/:id" element={<TextEditor />} />
+          <Route path="/saveDoc" element={<SaveDocument />} />
         </Route>
+
         <Route path="*" element={<NotFound />} />
-        <Route
-          path="/"
-          element={
-            <PrivateRoute>
-              <Navigate to={`/documents/${uuidv4()}`} />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/documents/:id"
-          element={
-            <PrivateRoute>
-              <TextEditor />
-            </PrivateRoute>
-          }
-        />
+        <Route path="404" element={<NotFound />} />
+
       </Routes>
     </Router>
   );

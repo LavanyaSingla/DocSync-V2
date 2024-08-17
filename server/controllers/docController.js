@@ -7,10 +7,10 @@ class docController {
         const _id = uuidv4();
         try {
             const owner = req.user._id;
-            const document = new docModel({ _id, owner });
-            const result = await document.save();
+            const newDocument = new docModel({ _id, owner });
+            const result = await newDocument.save();
             if (result) {
-                return res.status(200).json({ message: "Document created" });
+                return res.status(200).json({ message: "Document created", document: result });
             }
             return res.status(500).json({ message: "some problem happened at the backedn" });
         }
@@ -25,7 +25,7 @@ class docController {
             const docs = await docModel.find({
                 $or: [{ owner: user }, { collaborators: user }]
             });
-            return res.status(200).json({ data: docs });
+            return res.status(200).json({ documents: docs });
         }
         catch (err) {
             return res.status(500).json({ message: err.message });

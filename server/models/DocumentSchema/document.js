@@ -1,6 +1,6 @@
-import mongoose, { Mongoose } from 'mongoose';
+import mongoose from 'mongoose';
 
-const Document = mongoose.Schema(
+const DocumentSchema = new mongoose.Schema(
     {
         _id: {
             type: String
@@ -9,8 +9,8 @@ const Document = mongoose.Schema(
             type: String,
         },
         content: {
-            type: String,
-            default: ""
+            type: Object,
+            default: { ops: [] }
         },
         collaborators: [{
             type: mongoose.Schema.Types.ObjectId,
@@ -25,7 +25,7 @@ const Document = mongoose.Schema(
             default: Date.now
         }
     }
-)
+);
 
-const docModel = mongoose.model('Document', Document);
-export default docModel;
+const Document = mongoose.model('Document', DocumentSchema);
+export default Document;

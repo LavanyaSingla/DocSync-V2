@@ -1,5 +1,4 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { v4 as uuidv4 } from 'uuid';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import TextEditor from "./TextEditor";
 import Login from './Components/Login';
 import Signup from './Components/Signup';
@@ -9,10 +8,7 @@ import ProtectedRoutes from './Services/ProtectedRoutes.js';
 import NotFound from './Pages/404.js';
 import AuthRoute from './Services/AuthRoute.js';
 import SaveDocument from './Components/SaveDocument.js';
-
-function PrivateRoute({ children }) {
-  return <Navigate to="/login" />;
-}
+import ShareDocument from './Components/ShareDocument.js';
 
 function App() {
   return (
@@ -26,7 +22,9 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/changePassword" element={<ChangePassword />} />
           <Route path="/document/:id" element={<TextEditor />} />
-          <Route path="/saveDoc" element={<SaveDocument />} />
+          <Route path="/saveDoc/document/:id" element={<SaveDocument />} />
+          <Route path="/share/document/:id" element={<ShareDocument />} />
+
         </Route>
 
         <Route path="*" element={<NotFound />} />

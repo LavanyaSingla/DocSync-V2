@@ -13,6 +13,8 @@ router.post("/changePassword", checkIsUserAuthenticated, authController.changePa
 router.post("/createDocument", checkIsUserAuthenticated, docController.createDocument);
 router.post("/fetchDocuments", checkIsUserAuthenticated, docController.fetchDocuments);
 router.post("/document/:id", checkIsUserAuthenticated, docController.fetchDocumentById);
+router.post("/renameDoc/document/:id", checkIsUserAuthenticated, docController.renameDoc);
+
 
 export default router;
 

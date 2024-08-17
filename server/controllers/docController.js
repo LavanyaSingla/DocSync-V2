@@ -41,6 +41,17 @@ class docController {
         catch (err) {
             return res.status(500).json({ message: err.message });
         }
+    };
+    static renameDoc = async (req, res) => {
+        try {
+            const docId = req.params.id;
+            const {docName} = req.body;
+            const response = await docModel.findByIdAndUpdate({ _id: docId }, { name: docName });
+            return res.status(200).json({ message: response });
+        }
+        catch (err) {
+            return res.status(500).json({ message: err.message });
+        }
     }
 };
 

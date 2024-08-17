@@ -26,7 +26,7 @@ export default function TextEditor() {
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
   const handleSaveDoc = (e) => {
-    navigate("/saveDoc");
+    navigate(`/saveDoc/document/${documentId}`);
   };
   const fetchDocument = async () => {
     try {
@@ -129,7 +129,9 @@ export default function TextEditor() {
   return (
     <div>
       <div className="navbar">
+        <button onClick={() => navigate("/")}>Home</button>
         <button onClick={handleSaveDoc}>Save</button>
+        <button onclick={() => navigate(`/share/document/${documentId}`)}>Share</button>
       </div>
       <div className="container" ref={wrapperRef}></div>
     </div>

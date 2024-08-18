@@ -1,6 +1,6 @@
-# DocSync
+# DocSync-v2
 
-DocSync is a collaborative document editing tool designed to enable multiple users to work on documents simultaneously. Built using React, Mongoose, Socket.io, and Quill, DocSync provides real-time synchronization and editing features akin to Google Docs.
+DocSync version2 is a collaborative document editing tool designed to enable multiple users to work on documents simultaneously. Built using React, Mongoose, Socket.io, and Quill, DocSync provides real-time synchronization and editing features akin to Google Docs.
 
 ![DocSync](./Images/HomePage.png)
 

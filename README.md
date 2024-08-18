@@ -2,12 +2,18 @@
 
 DocSync is a collaborative document editing tool designed to enable multiple users to work on documents simultaneously. Built using React, Mongoose, Socket.io, and Quill, DocSync provides real-time synchronization and editing features akin to Google Docs.
 
+![DocSync](Images\HomePage.png)
+
 ## Features
 
 - **Real-time Collaboration**: Edit documents together with other users in real-time.
 - **Version Control**: Automatically save document changes at regular intervals of 2 seconds.
-- **Text Formatting**: Use rich text formatting options including headings, lists, and more with Quill.
-- **Document Management**: Create and access documents by unique IDs.
+- **Rich Text Formatting**: Utilize a wide range of formatting options with Quill, including headings, lists, and more.
+- **Document Management**: Create, access, and manage documents using unique IDs.
+- **User Authentication**: Includes signup, login, and logout functionalities.
+- **Password Management**: Change passwords and reset forgotten passwords.
+- **Document Sharing**: Share documents with other users via email invitations.
+- **Document Renaming**: Easily rename documents from the user interface.
 
 ## Technologies Used
 
@@ -28,8 +34,9 @@ DocSync is a collaborative document editing tool designed to enable multiple use
 1. **Clone the Repository**
 
    ```sh
-   git clone https://github.com/LavanyaSinglaDocSync.git
+   git clone https://github.com/LavanyaSingla/DocSync.git
    cd DocSync
+
 
 2. **Install Dependencies**
 
@@ -63,3 +70,15 @@ DocSync is a collaborative document editing tool designed to enable multiple use
     ```sh
     cd client
     npm run start
+
+## Screenshots
+
+
+## Usage
+1. Access the Application: Open http://localhost:3000 in your browser.
+2. Authenticate: Use the signup or login pages to access the application.
+3. Create and Edit Documents: Start new documents or edit existing ones in real-time.
+4. Manage Documents: Share, rename, and manage your documents from the user interface.
+
+## Contributing
+Feel free to open issues or submit pull requests to contribute to the development of DocSync.

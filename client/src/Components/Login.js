@@ -17,29 +17,64 @@ const Login = () => {
                 localStorage.setItem("token", res.data.token);
                 navigate("/");
             }
-        }
-        catch (err) {
+        } catch (err) {
             alert(err.response.data.message);
             console.log(err.response.data);
         }
     };
+
     const handleChange = (e) => {
         setInput({ ...input, [e.target.name]: e.target.value });
-    }
+    };
+
     return (
-        <form onSubmit={submitHandler}>
-            <label>
-                Email:
-                <input type="text" name="email" value={input.email} onChange={handleChange} />
-            </label>
-            <label>
-                Password:
-                <input type="password" name="password" value={input.password} onChange={handleChange} />
-            </label>
-            <button type="submit">Login</button>
-            <p>Don't have an account? <Link to="/signup">Sign Up</Link></p>
-            <p>Forget Password <Link to="/resetPassword">Click Here</Link></p>
-        </form>
+        <div className="container mt-5">
+            <div className="row justify-content-center">
+                <div className="col-md-6">
+                    <div className="card">
+                        <div className="card-body">
+                            <h2 className="text-center mb-4">Login</h2>
+                            <form onSubmit={submitHandler}>
+                                <div className="mb-3">
+                                    <label htmlFor="email" className="form-label">Email:</label>
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        value={input.email}
+                                        onChange={handleChange}
+                                        className="form-control"
+                                        id="email"
+                                        required
+                                    />
+                                </div>
+                                <div className="mb-3">
+                                    <label htmlFor="password" className="form-label">Password:</label>
+                                    <input
+                                        type="password"
+                                        name="password"
+                                        value={input.password}
+                                        onChange={handleChange}
+                                        className="form-control"
+                                        id="password"
+                                        required
+                                    />
+                                </div>
+                                <div className="d-grid">
+                                    <button type="submit" className="btn btn-primary">Login</button>
+                                </div>
+                            </form>
+                            <p className="mt-3 text-center">
+                                Don't have an account? <Link to="/signup">Sign Up</Link>
+                            </p>
+                            <p className="text-center">
+                                Forgot Password? <Link to="/resetPassword">Click Here</Link>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     );
 };
+
 export default Login;

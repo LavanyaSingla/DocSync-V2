@@ -31,17 +31,38 @@ const ShareDocument = () => {
             }
             console.log("Error while sharing the document", err);
         }
-    }
+    };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <label>
-                Email
-                <input type="text" name="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-            </label>
-            <button type="submit"> Add </button>
-        </form>
+        <div className="container mt-5">
+            <div className="row justify-content-center">
+                <div className="col-md-6">
+                    <div className="card">
+                        <div className="card-body">
+                            <h2 className="text-center mb-4">Share Document</h2>
+                            <form onSubmit={handleSubmit}>
+                                <div className="mb-3">
+                                    <label htmlFor="email" className="form-label">Email</label>
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        value={email}
+                                        onChange={(e) => setEmail(e.target.value)}
+                                        className="form-control"
+                                        id="email"
+                                        required
+                                    />
+                                </div>
+                                <div className="d-grid">
+                                    <button type="submit" className="btn btn-primary">Add</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     );
-}
+};
 
 export default ShareDocument;

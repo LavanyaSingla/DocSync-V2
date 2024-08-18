@@ -14,7 +14,7 @@ const Login = () => {
             const res = await axios.post("api/login", input);
             alert(res.data.message);
             if (res.status === 200) {
-                localStorage.setItem("token",res.data.token);
+                localStorage.setItem("token", res.data.token);
                 navigate("/");
             }
         }
@@ -38,6 +38,7 @@ const Login = () => {
             </label>
             <button type="submit">Login</button>
             <p>Don't have an account? <Link to="/signup">Sign Up</Link></p>
+            <p>Forget Password <Link to="/resetPassword">Click Here</Link></p>
         </form>
     );
 };

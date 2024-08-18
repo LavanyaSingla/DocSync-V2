@@ -53,7 +53,7 @@ const Home = () => {
         fetchDocs();
     }, []);
     return (
-        <div>Home
+        <div>
             <h1>Your documents</h1>
             <button onClick={handleCreateNewDoc}>Create a new document</button>
             <ul>

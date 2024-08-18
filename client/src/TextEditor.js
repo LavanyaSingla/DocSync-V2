@@ -25,9 +25,12 @@ export default function TextEditor() {
   const { id: documentId } = useParams();
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
-  const handleSaveDoc = (e) => {
+  const handleSaveDoc = () => {
     navigate(`/saveDoc/document/${documentId}`);
   };
+  const handleShare = () => {
+    navigate(`/share/document/${documentId}`);
+  }
   const fetchDocument = async () => {
     try {
       const response = await axios.post(`api/document/${documentId}`, {}, {
@@ -131,7 +134,7 @@ export default function TextEditor() {
       <div className="navbar">
         <button onClick={() => navigate("/")}>Home</button>
         <button onClick={handleSaveDoc}>Save</button>
-        <button onclick={() => navigate(`/share/document/${documentId}`)}>Share</button>
+        <button onClick={handleShare}>Share</button>
       </div>
       <div className="container" ref={wrapperRef}></div>
     </div>

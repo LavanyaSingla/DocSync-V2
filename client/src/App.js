@@ -9,6 +9,8 @@ import NotFound from './Pages/404.js';
 import AuthRoute from './Services/AuthRoute.js';
 import SaveDocument from './Components/SaveDocument.js';
 import ShareDocument from './Components/ShareDocument.js';
+import ResetPassword from './Components/ResetPassword.js';
+import Reset from './Components/Reset.js';
 
 function App() {
   return (
@@ -24,11 +26,14 @@ function App() {
           <Route path="/document/:id" element={<TextEditor />} />
           <Route path="/saveDoc/document/:id" element={<SaveDocument />} />
           <Route path="/share/document/:id" element={<ShareDocument />} />
-
         </Route>
 
         <Route path="*" element={<NotFound />} />
         <Route path="404" element={<NotFound />} />
+        <Route path="/resetPassword" element={<ResetPassword />} />
+        <Route path="/reset/:id/:token" element={<Reset />} />
+
+
 
       </Routes>
     </Router>

@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 import docModel from "../models/DocumentSchema/document.js";
 import mongoose from "mongoose";
+import userModel from "../models/UserSchema/user.js";
 
 class docController {
     static createDocument = async (req, res) => {
@@ -45,11 +46,27 @@ class docController {
     static renameDoc = async (req, res) => {
         try {
             const docId = req.params.id;
-            const {docName} = req.body;
+            const { docName } = req.body;
             const response = await docModel.findByIdAndUpdate({ _id: docId }, { name: docName });
             return res.status(200).json({ message: response });
         }
         catch (err) {
+            return res.status(500).json({ message: err.message });
+        }
+    };
+    static shareDoc = async (req, res) => {
+        try {
+            const docId = req.params.id;
+            const { email } = req.body;
+            const user = await userModel.findOne({ email });
+            if (!user) return res.status(400).json({ message: "user not found" });
+            const updatedDoc = await docModel.findByIdAndUpdate({ _id: docId }, { $addToSet: { collaborators: user._id } }, { new: true });
+            if (!updatedDoc) return res.status(404).json({ message: "document not found" });
+            console.log(updatedDoc);
+            return res.status(200).json({ message: "User added" });
+        }
+        catch (err) {
+            console.log(err);
             return res.status(500).json({ message: err.message });
         }
     }

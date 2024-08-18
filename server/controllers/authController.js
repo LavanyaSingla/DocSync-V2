@@ -46,7 +46,7 @@ class authController {
                             { expiresIn: "2d" }
                         );
 
-                        return res.status(200).json({ message: "User login successfully", token });
+                        return res.status(200).json({ message: "User login successfully", token, data: isUser });
                     }
                     else {
                         return res.status(400).json({ message: "Invalid credentials" });

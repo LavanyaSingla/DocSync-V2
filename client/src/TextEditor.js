@@ -22,14 +22,16 @@ const TOOLBAR_OPTIONS = [
 export default function TextEditor() {
   const [socket, setSocket] = useState(null);
   const [quill, setQuill] = useState(null);
+  const { docName: docName } = useParams();
   const { id: documentId } = useParams();
   const token = localStorage.getItem("token");
+  const username = localStorage.getItem("username");
   const navigate = useNavigate();
   const handleSaveDoc = () => {
-    navigate(`/saveDoc/document/${documentId}`);
+    navigate(`/saveDoc/document/${docName}/${documentId}`);
   };
   const handleShare = () => {
-    navigate(`/share/document/${documentId}`);
+    navigate(`/share/document/${docName}/${documentId}`);
   }
   const fetchDocument = async () => {
     try {
@@ -131,12 +133,19 @@ export default function TextEditor() {
 
   return (
     <div>
-      <div className="navbar">
-        <button onClick={() => navigate("/")}>Home</button>
-        <button onClick={handleSaveDoc}>Save</button>
-        <button onClick={handleShare}>Share</button>
-      </div>
-      <div className="container" ref={wrapperRef}></div>
+      <nav className="navbar navbar-expand-lg navbar-light bg-light">
+        <div className="container-fluid">
+          <button className="btn btn-secondary me-2" onClick={() => navigate("/")}>{username}</button>
+          <div className="d-flex justify-content-center flex-grow-1">
+            <span className="fw-bold">{docName}</span>
+          </div>
+          <div className="d-flex align-items-center ms-auto">
+            <button className="btn btn-secondary me-2" onClick={handleSaveDoc}>Save</button>
+            <button className="btn btn-secondary" onClick={handleShare}>Share</button>
+          </div>
+        </div>
+      </nav>
+      <div className="container mt-3" ref={wrapperRef}></div>
     </div>
   );
 };

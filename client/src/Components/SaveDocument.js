@@ -6,6 +6,7 @@ const SaveDocument = () => {
     const [docName, setDocName] = useState('');
     const token = localStorage.getItem("token");
     const { id: documentId } = useParams();
+    const { docName: docmentName } = useParams();
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -22,7 +23,7 @@ const SaveDocument = () => {
             });
             if (response.status === 200) {
                 alert("Name saved successfully!");
-                navigate(`/document/${documentId}`);
+                navigate(`/document/${docmentName}/${documentId}`);
             } else {
                 alert("Error found");
                 console.log(response);

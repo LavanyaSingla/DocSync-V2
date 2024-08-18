@@ -87,7 +87,7 @@ const Home = () => {
                             <div className="card h-100">
                                 <div className="card-body d-flex align-items-center justify-content-center">
                                     <span className="text-center">
-                                        <Link to={`/document/${doc._id}`} className="doc-link">
+                                        <Link to={`/document/${doc.name  ? doc.name : doc._id}/${doc._id}`} className="doc-link">
                                             {doc.name ? doc.name : doc._id}
                                         </Link>
                                     </span>

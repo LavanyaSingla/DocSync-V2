@@ -5,6 +5,8 @@ import axios from '../Services/axiosInterceptor';
 const ShareDocument = () => {
     const [email, setEmail] = useState('');
     const { id: documentId } = useParams();
+
+    const { docName: docName } = useParams();
     const token = localStorage.getItem("token");
     const navigate = useNavigate();
 
@@ -20,7 +22,7 @@ const ShareDocument = () => {
             // Handle successful request (status 200)
             if (response.status === 200) {
                 alert("User added successfully!");
-                navigate(`/document/${documentId}`);
+                navigate(`/document/${docName}/${documentId}`);
             }
         } catch (err) {
             // Handle error response (status 400 or other)

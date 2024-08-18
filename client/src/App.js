@@ -23,9 +23,9 @@ function App() {
         <Route path="/" element={<ProtectedRoutes />}>
           <Route path="/" element={<Home />} />
           <Route path="/changePassword" element={<ChangePassword />} />
-          <Route path="/document/:id" element={<TextEditor />} />
-          <Route path="/saveDoc/document/:id" element={<SaveDocument />} />
-          <Route path="/share/document/:id" element={<ShareDocument />} />
+          <Route path="/document/:docName/:id" element={<TextEditor />} />
+          <Route path="/saveDoc/document/:docName/:id" element={<SaveDocument />} />
+          <Route path="/share/document/:docName/:id" element={<ShareDocument />} />
         </Route>
 
         <Route path="*" element={<NotFound />} />
